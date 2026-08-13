@@ -19,6 +19,7 @@ using Soenneker.OpenApi.Merger.Abstract;
 using Soenneker.Utils.Directory.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Download.Abstract;
+using Soenneker.Utils.Yaml.Abstract;
 using System.Collections.Generic;
 
 namespace Soenneker.Polymarket.Runners.OpenApiClient.Utils;
@@ -36,10 +37,11 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IFileDownloadUtil _fileDownloadUtil;
     private readonly IFileUtil _fileUtil;
     private readonly IDirectoryUtil _directoryUtil;
+    private readonly IYamlUtil _yamlUtil;
 
     public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IConfiguration configuration, IGitUtil gitUtil, IDotnetUtil dotnetUtil,
         IFileDownloadUtil fileDownloadUtil, IFileUtil fileUtil, IDirectoryUtil directoryUtil, IKiotaUtil kiotaUtil, IOpenApiFixer openApiFixer,
-        IOpenApiMerger openApiMerger)
+        IOpenApiMerger openApiMerger, IYamlUtil yamlUtil)
     {
         _logger = logger;
         _configuration = configuration;
@@ -51,6 +53,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         _fileDownloadUtil = fileDownloadUtil;
         _fileUtil = fileUtil;
         _directoryUtil = directoryUtil;
+        _yamlUtil = yamlUtil;
     }
 
     public async ValueTask Process(CancellationToken cancellationToken = default)
@@ -84,7 +87,16 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
             if (downloadedPath == null)
                 throw new InvalidOperationException($"Polymarket {configKey} OpenAPI document download failed.");
 
-            mergeInputs.Add((prefix, downloadedPath));
+            string jsonPath = downloadedPath;
+
+            if (extension.Equals(".yaml", StringComparison.OrdinalIgnoreCase))
+            {
+                jsonPath = Path.Combine(sourcesDirectory, $"{prefix}.json");
+                await _fileUtil.DeleteIfExists(jsonPath, cancellationToken: cancellationToken);
+                await _yamlUtil.SaveAsJson(downloadedPath, jsonPath, cancellationToken: cancellationToken);
+            }
+
+            mergeInputs.Add((prefix, jsonPath));
         }
 
         OpenApiDocument merged = await _openApiMerger.MergeOpenApis(mergeInputs, cancellationToken);

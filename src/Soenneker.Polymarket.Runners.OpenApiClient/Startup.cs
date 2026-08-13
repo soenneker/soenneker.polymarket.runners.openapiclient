@@ -6,6 +6,7 @@ using Soenneker.OpenApi.Merger.Registrars;
 using Soenneker.Polymarket.Runners.OpenApiClient.Utils;
 using Soenneker.Polymarket.Runners.OpenApiClient.Utils.Abstract;
 using Soenneker.Utils.File.Download.Registrars;
+using Soenneker.Utils.Yaml.Registrars;
 
 namespace Soenneker.Polymarket.Runners.OpenApiClient;
 
@@ -26,6 +27,7 @@ public static class Startup
                 .AddSingleton<IFileOperationsUtil, FileOperationsUtil>()
                 .AddRunnersManagerAsSingleton()
                 .AddFileDownloadUtilAsSingleton()
+                .AddYamlUtilAsSingleton()
                 .AddOpenApiMergerAsSingleton()
                 .AddOpenApiFixerAsSingleton()
                 .AddKiotaUtilAsSingleton();
