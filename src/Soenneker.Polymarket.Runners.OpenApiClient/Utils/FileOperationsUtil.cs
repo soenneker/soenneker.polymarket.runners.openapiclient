@@ -66,7 +66,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         (string Prefix, string ConfigKey, string Url, string Extension)[] sources =
         [
             ("bridge", "Bridge", "https://docs.polymarket.com/api-spec/bridge-openapi.yaml", ".yaml"),
-            ("data", "Data", "https://docs.polymarket.com/api-spec/data-openapi.yaml", ".yaml"),
+            ("data", "Data", "https://data-api.polymarket.com/v2/openapi.json", ".json"),
             ("perps", "Perps", "https://docs.polymarket.com/api-spec/perps-openapi.json", ".json"),
             ("clob", "Clob", "https://docs.polymarket.com/api-spec/clob-openapi.yaml", ".yaml"),
             ("combos-rfq", "CombosRfq", "https://docs.polymarket.com/api-spec/combos-rfq-openapi.yaml", ".yaml"),
